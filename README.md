@@ -1,3 +1,5 @@
 # fetch-table
+[page](https://vitaliybaryliuk.github.io/fetch-table/dist)
+[pull request](https://github.com/VitaliyBaryliuk/fetch-table/pull/1/commits/132fb4c3f83868f18afa5ede505c48f49e4c7477)
 
-[I'm an inline-style link](https://www.google.com)
+
