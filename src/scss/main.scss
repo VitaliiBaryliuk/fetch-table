@@ -1,0 +1,40 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.phones {
+
+  &__row {
+    border: 1px solid black;
+  }
+
+  &__td {
+    text-align: center;
+    border: 1px solid black;
+  }
+
+  &__th {
+    text-align: center;
+    border: 1px solid black;
+  }
+}
+
+.pagination {
+  margin: 20px auto;
+
+  &__item {
+    display: inline;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: gray;
+    cursor: pointer;
+  }
+}  
