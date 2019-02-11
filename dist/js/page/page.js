@@ -22,46 +22,45 @@ export default class Page {
           'sort',
           (value) => {
             this._table.sort(value);
-          }
+          },
         );
 
         this._table.subscribe(
-          'selected-all', 
+          'selected-all',
           (topCheckbox) => {
             this._table.setAllSelected(topCheckbox);
-          }
+          },
         );
 
         this._table.subscribe(
-          'show-selected', 
+          'show-selected',
           (status) => {
-            if (status === 'Show selected')  {
+            if (status === 'Show selected') {
               this._table.selectedStatus = 'Show all';
               this._table.getSelected();
             } else {
               this._table.selectedStatus = 'Show selected';
               this._table.getAll();
-            } 
-          }
+            }
+          },
         );
 
         this._search = new Search({ element: document.querySelector('[data-component="search"]') });
-          
+
         this._search.subscribe('search-clicked', (value) => {
           this._table.search(value);
         });
 
         // this.pagination = new Pagination({
         //   element: this._element.querySelector('[data-component="pagination"]'),
-        //   total: 20, 
+        //   total: 20,
         //   perPage: 5,
         //   page: 1,
         //   withInfo: false,
         // });
 
         // this.pagination.setPages(phones);
-
       });
-  } 
+  }
 
 }

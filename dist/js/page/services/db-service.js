@@ -7,6 +7,5 @@ export default class DbService {
         .then(phones => resolve(phones));
     });
   }
+  
 }
-
-new DbService();

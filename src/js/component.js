@@ -21,8 +21,8 @@ export default class Component {
       }
       callback(event);
     });
-  } 
-  
+  }
+
   subscribe(eventName, callback) {
     this.callbackMap[eventName] = callback;
   }

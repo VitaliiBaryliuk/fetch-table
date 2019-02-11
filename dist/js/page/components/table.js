@@ -1,10 +1,10 @@
-import Component from '../../component.js'
+import Component from '../../component.js';
 
 export default class Table extends Component {
   constructor({ element, phones = [] }) {
     super(element);
     this._element = element;
-    this._phones  = phones;
+    this._phones = phones;
     this._renderedArr = this._phones;
     this._allPhones = phones;
     this._sortCounterAge = 1;
@@ -14,18 +14,18 @@ export default class Table extends Component {
     this.columnConfig = {
       name: {
         title: 'Название',
-        isSortable: true, 
+        isSortable: true,
         isSearchable: true,
       },
       age: {
         title: 'Возраст',
-        isSortable: true, 
+        isSortable: true,
       },
       snippet: {
         title: 'Описание',
         isSearchable: true,
-      }
-    }
+      },
+    };
 
     this._render();
 
@@ -48,13 +48,13 @@ export default class Table extends Component {
 
   setAllSelected(topCheckbox) {
     const checkboxes = this._element.querySelectorAll('[type="checkbox"]');
-    Array.from(checkboxes).map(checkbox => checkbox.checked = topCheckbox.checked);
+    Array.from(checkboxes).map(checkbox => checkbox.checked === topCheckbox.checked);
   }
 
   getSelected() {
-    let tempArr = [];
+    const tempArr = [];
     const checkboxes = Array.from(this._element.querySelectorAll('[type="checkbox"]'))
-    .filter(item => item.checked);
+      .filter(item => item.checked);
     this._renderedArr.map((phone) => {
       checkboxes.map((item) => {
         if (item.dataset.id === phone.id) {
@@ -74,21 +74,19 @@ export default class Table extends Component {
   sort(value) {
     this._renderedArr = this._phones;
     if (value === 'age') {
-      this._renderedArr.sort((a, b) => { 
-        if (this._sortCounterAge % 2 === 0 ) {
-          return a[value] - b[value];         
-        } else {
-          return b[value] - a[value];
+      this._renderedArr.sort((a, b) => {
+        if (this._sortCounterAge % 2 === 0) {
+          return a[value] - b[value];
         }
+        return b[value] - a[value];
       });
       this._sortCounterAge += 1;
     } else {
-      this._renderedArr.sort((a, b) => { 
+      this._renderedArr.sort((a, b) => {
         if (this._sortCounterName % 2 === 0) {
-          return a[value] > b[value] ? 1 : -1;         
-        } else {
-          return a[value] < b[value] ? 1 : -1;
+          return a[value] > b[value] ? 1 : -1;
         }
+        return a[value] < b[value] ? 1 : -1;
       });
       this._sortCounterName += 1;
     }
@@ -101,7 +99,7 @@ export default class Table extends Component {
   }
 
   _render() {
-    this._element.innerHTML =  `
+    this._element.innerHTML = `
       <div class='phones'>
         <table class="phones__table">
           <tr>
@@ -109,11 +107,11 @@ export default class Table extends Component {
               <input type="checkbox" data-element="select-all" />
               <button data-element="show-selected">${this.selectedStatus}</button>
             </th>
-              ${ Object.keys(this.columnConfig).map(option => `
+              ${Object.keys(this.columnConfig).map(option => `
             <th 
               class="phones__th" 
-              data-element="${ this.columnConfig[option].isSortable ? 'sort' : 'unsort'}"
-              data-element="${ this.columnConfig[option].isSearchable ? 'search' : 'unsearch'}"
+              data-element="${this.columnConfig[option].isSortable ? 'sort' : 'unsort'}"
+              data-element="${this.columnConfig[option].isSearchable ? 'search' : 'unsearch'}"
               data-value="${option}">
                 ${this.columnConfig[option].title}
             </th>
@@ -140,5 +138,4 @@ export default class Table extends Component {
       </div>
     `;
   }
-
 }

@@ -1,6 +1,14 @@
 
 export default class Pagination {
-constructor({element, total, perPage, page, withInfo }) {
+  constructor(
+    {
+      element,
+      total,
+      perPage,
+      page,
+      withInfo,
+    },
+  ) {
     this._element = element;
     this._total = total;
     this._perPage = perPage;
@@ -12,17 +20,16 @@ constructor({element, total, perPage, page, withInfo }) {
   setPages(arr) {
     arr.forEach(() => {
       this.pagesArr.push(arr.splice(0, this._perPage));
-    }); 
+    });
     this._render();
   }
-  
+
   _render() {
-    let pageCount = 1; 
+    let pageCount = 1;
     this._element.innerHTML = `
-      ${this.pagesArr.map( page => `
+      ${this.pagesArr.map(page => `
       <li class='pagination__item'>${pageCount++}</li>
       `).join('')}
     `;
   }
-
 }
