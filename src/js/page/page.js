@@ -13,15 +13,41 @@ export default class Page {
 
     this.promise.getData(PHONES_LINK)
       .then((phones) => {
+        this._pagination = new Pagination({
+          element: this._element.querySelector('[data-component="pagination"]'),
+          total: 20,
+          perPage: 5,
+          page: 1,
+          withInfo: false,
+        });
+
+
+        const phonesBase = this._pagination.setPages([...phones]);
+        this._pagination.subscribe(
+          'page-changed',
+          (target) => {
+            this._table.changePage(target.textContent);
+          });
+
+        this._pagination.subscribe(
+          'items-on-page-ganged',
+          () => {
+            const phonesChenged = this._pagination.setPages([...phones]);
+            this._table.changeItemsCount(phonesChenged);
+          });
+
         this._table = new Table({
           element: this._element.querySelector('[data-component="table"]'),
-          phones,
+          phones: phonesBase,
+          activePage: this._pagination.page,
         });
 
         this._table.subscribe(
           'sort',
           (value) => {
-            this._table.sort(value);
+            let sortedArr = this._table.sort(value, [...phones]);
+            sortedArr = this._pagination.setPages(sortedArr);
+            this._table.changeItemsCount(sortedArr);
           },
         );
 
@@ -37,10 +63,13 @@ export default class Page {
           (status) => {
             if (status === 'Show selected') {
               this._table.selectedStatus = 'Show all';
-              this._table.getSelected();
+              let filtredArr = this._table.getSelected([...phones]);
+              filtredArr = this._pagination.setPages(filtredArr);
+              this._table.changeItemsCount(filtredArr);
             } else {
               this._table.selectedStatus = 'Show selected';
-              this._table.getAll();
+              const filtredArr = this._pagination.setPages([...phones]);
+              this._table.changeItemsCount(filtredArr);
             }
           },
         );
@@ -48,19 +77,10 @@ export default class Page {
         this._search = new Search({ element: document.querySelector('[data-component="search"]') });
 
         this._search.subscribe('search-clicked', (value) => {
-          this._table.search(value);
+          let filtredArr = this._table.search(value, [...phones]);
+          filtredArr = this._pagination.setPages(filtredArr);
+          this._table.changeItemsCount(filtredArr);
         });
-
-        // this.pagination = new Pagination({
-        //   element: this._element.querySelector('[data-component="pagination"]'),
-        //   total: 20,
-        //   perPage: 5,
-        //   page: 1,
-        //   withInfo: false,
-        // });
-
-        // this.pagination.setPages(phones);
       });
   }
-
 }
