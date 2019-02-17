@@ -4,7 +4,10 @@
       "browser": true
     },
     "rules": {
-        "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"]
+        "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+        "linebreak-style": ["error", "windows"],
+        "no-plusplus": 0,
+    	"no-underscore-dangle": ["error", { "allowAfterThis": true }],
     }
   }
   

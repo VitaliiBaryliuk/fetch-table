@@ -1,0 +1,29 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
+
+.header {
+  display: flex;
+  justify-content: space-between; }
+
+.phones__row {
+  border: 1px solid black; }
+
+.phones__td {
+  text-align: center;
+  border: 1px solid black; }
+
+.phones__th {
+  text-align: center;
+  border: 1px solid black; }
+
+.pagination {
+  margin: 20px auto; }
+  .pagination__item {
+    display: inline;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: gray;
+    cursor: pointer; }
