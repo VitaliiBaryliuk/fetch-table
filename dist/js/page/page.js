@@ -1,86 +1,124 @@
-import DbService from './services/db-service.js';
 import Table from './components/table.js';
 import Search from './components/search.js';
 import Pagination from './components/paginagion.js';
+import Component from '../component.js';
+import PhoneService from './services/db-service.js';
 
-const PHONES_LINK = 'https://mate-academy.github.io/phone-catalogue-static/phones/phones.json';
-
-export default class Page {
+export default class Page extends Component {
   constructor({ element }) {
-    this._element = element;
+    super({ element });
 
-    this.promise = new DbService();
+    this._state = {
+      phones: [],
 
-    this.promise.getData(PHONES_LINK)
-      .then((phones) => {
-        this._pagination = new Pagination({
-          element: this._element.querySelector('[data-component="pagination"]'),
-          total: 20,
-          perPage: 5,
-          page: 1,
-          withInfo: false,
-        });
+      currentPage: 1,
+      perPage: 5,
+
+      query: '',
+      sortBy: 'age',
+
+      selectedAll: false,
+    };
+
+    this._showPhones();
+    this._initPhoneTable();
+    this._initPagination();
+    this._initSearch();
+  }
+
+  get pagesCount() {
+    const { perPage, phones } = this._state;
+
+    return Math.ceil(phones.length / perPage);
+  }
+
+  async _showPhones() {
+    const phones = await PhoneService.getAll();
+
+    this._setState({
+      phones,
+      currentPage: 1,
+    });
+  }
+
+  _initPhoneTable() {
+    this._table = new Table(
+      { element: this._element.querySelector('[data-component="table"]') },
+    );
+
+    this._table.subscribe('order-changed', (value) => {
+      let { phones } = this._state;
+      phones = this._table.sort(value, phones);
+      this._setState({ phones });
+    });
+
+    this._table.subscribe('phone-selected', (phoneId) => {
+      const { phones } = this._state;
+      const clickedPhone = phones.find(phone => phone.id === phoneId);
+      clickedPhone['selected-status'] = !clickedPhone['selected-status'];
+
+      this._setState({ phones });
+    });
+  }
+
+  _initPagination() {
+    this._pagination = new Pagination({
+      element: this._element.querySelector('[data-component="pagination"]'),
+      props: {
+        perPage: this._state.perPage,
+        currentPage: this._state.currentPage,
+        pagesCount: this.pagesCount,
+      },
+    });
+
+    this._pagination.subscribe('page-changed', (currentPage) => {
+      this._setState({ currentPage });
+    });
+
+    this._pagination.subscribe('per-page-changed', (perPage) => {
+      this._setState({ perPage, currentPage: 1 });
+    });
+  }
+
+  _initSearch() {
+    this._search = new Search({
+      element: document.querySelector('[data-component="search"]'),
+    });
 
 
-        const phonesBase = this._pagination.setPages([...phones]);
-        this._pagination.subscribe(
-          'page-changed',
-          (target) => {
-            this._table.changePage(target.textContent);
-          });
+    this._search.subscribe(
+      'search-clicked',
+      (query) => {
+        this._setState({ query });
+      },
+    );
+  }
 
-        this._pagination.subscribe(
-          'items-on-page-ganged',
-          () => {
-            const phonesChenged = this._pagination.setPages([...phones]);
-            this._table.changeItemsCount(phonesChenged);
-          });
+  _updateView() {
+    const {
+      perPage,
+      currentPage,
+      query,
+    } = this._state;
 
-        this._table = new Table({
-          element: this._element.querySelector('[data-component="table"]'),
-          phones: phonesBase,
-          activePage: this._pagination.page,
-        });
+    let { phones } = this._state;
 
-        this._table.subscribe(
-          'sort',
-          (value) => {
-            let sortedArr = this._table.sort(value, [...phones]);
-            sortedArr = this._pagination.setPages(sortedArr);
-            this._table.changeItemsCount(sortedArr);
-          },
-        );
+    if (query) {
+      const regex = new RegExp(query, 'i');
+      phones = phones.filter(listItem => regex.test(listItem.name));
+    }
 
-        this._table.subscribe(
-          'selected-all',
-          (topCheckbox) => {
-            this._table.setAllSelected(topCheckbox);
-          },
-        );
+    const paginationProps = {
+      pagesCount: Math.ceil(phones.length / perPage),
+      currentPage,
+      perPage,
+    };
 
-        this._table.subscribe(
-          'show-selected',
-          (status) => {
-            if (status === 'Show selected') {
-              this._table.selectedStatus = 'Show all';
-              let filtredArr = this._table.getSelected([...phones]);
-              filtredArr = this._pagination.setPages(filtredArr);
-              this._table.changeItemsCount(filtredArr);
-            } else {
-              this._table.selectedStatus = 'Show selected';
-              const filtredArr = this._pagination.setPages([...phones]);
-              this._table.changeItemsCount(filtredArr);
-            }
-          },
-        );
+    const startIndex = (currentPage - 1) * perPage;
+    const lastIndex = startIndex + Number(perPage);
+    const visiblePhoenes = phones.slice(startIndex, lastIndex);
+    this._table.show(visiblePhoenes);
 
-        this._search = new Search({ element: document.querySelector('[data-component="search"]') });
-
-        this._search.subscribe('search-clicked', (value) => {
-          let filtredArr = this._table.search(value, [...phones]);
-          filtredArr = this._pagination.setPages(filtredArr);
-          this._table.changeItemsCount(filtredArr);
-        });
-      });
+    this._pagination.setProps(paginationProps);
   }
 }

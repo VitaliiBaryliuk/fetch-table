@@ -2,8 +2,7 @@ import Component from '../../component.js';
 
 export default class Search extends Component {
   constructor({ element }) {
-    super(element);
-    this._element = element;
+    super({ element });
 
     this.on('click', 'search-button', () => {
       this.emit('search-clicked', form.input.value);
